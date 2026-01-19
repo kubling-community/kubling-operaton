@@ -1,0 +1,195 @@
+openapi: 3.0.3
+info:
+  title: Order Issues API
+  version: 1.1.0
+  description: API for registering and retrieving order processing issues.
+
+servers:
+  - url: http://localhost:8081
+
+paths:
+  /issues:
+    post:
+      summary: Register an order issue
+      description: Creates a new issue entry for an order failure.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderIssueCreateRequest'
+      responses:
+        '201':
+          description: Issue created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderIssue'
+        '400':
+          description: Invalid request
+
+    get:
+      summary: List all issues
+      responses:
+        '200':
+          description: List of issues
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderIssue'
+
+  /issues/{id}:
+    get:
+      summary: Get issue by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Issue found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderIssue'
+        '404':
+          description: Issue not found
+
+    patch:
+      summary: Partially update an issue
+      operationId: partialUpdateIssue
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated issue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderIssue'
+        '404':
+          description: Issue not found
+        '409':
+          description: Conflict during partial update
+        '422':
+          description: Invalid patch payload
+        '500':
+          description: Upstream service error
+
+    delete:
+      summary: Delete issue by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Issue deleted
+        '404':
+          description: Issue not found
+
+  /orders/{orderId}/issues:
+    get:
+      summary: Get issues for a specific order
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of issues for an order
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderIssue'
+        '404':
+          description: Order not found
+
+  /issues/by-date:
+    get:
+      summary: List issues by timestamp range
+      description: Returns issues whose timestamp is between the optional 'from' and 'to' parameters.
+      parameters:
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Start date-time (inclusive)
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: End date-time (inclusive)
+      responses:
+        '200':
+          description: List of issues matching the date range
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderIssue'
+
+components:
+  schemas:
+
+    OrderIssueCreateRequest:
+      type: object
+      required:
+        - orderId
+        - errorCode
+        - errorMessage
+        - severity
+      properties:
+        orderId:
+          type: integer
+        errorCode:
+          type: string
+          maxLength: 100
+        errorMessage:
+          type: string
+          maxLength: 500
+        severity:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+
+    OrderIssue:
+      type: object
+      properties:
+        id:
+          type: integer
+        orderId:
+          type: integer
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+        severity:
+          type: string
+        timestamp:
+          type: string
+          format: date-time

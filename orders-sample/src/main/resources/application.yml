@@ -1,0 +1,12 @@
+server:
+  port: 8080
+
+spring:
+  devtools:
+    livereload:
+      enabled: false
+  cache:
+    type: none
+  application:
+    name: operaton-embedded-test
+  jta: "enabled"

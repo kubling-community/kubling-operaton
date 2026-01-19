@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:camunda="http://camunda.org/schema/1.0/bpmn"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:modeler="http://camunda.org/schema/modeler/1.0"
+                  id="Definitions_02uc86k"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Camunda Modeler"
+                  exporterVersion="5.27.0"
+                  modeler:executionPlatform="Camunda Platform"
+                  modeler:executionPlatformVersion="7.21.0">
+
+  <bpmn:process id="Process_with_wait" name="minimal-process-with-wait" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0irmb0v</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:sequenceFlow id="Flow_0irmb0v" sourceRef="StartEvent_1" targetRef="Activity_1s0wvb2" />
+
+    <bpmn:serviceTask id="Activity_1s0wvb2" camunda:delegateExpression="${txCheckDelegate}">
+      <bpmn:incoming>Flow_0irmb0v</bpmn:incoming>
+      <bpmn:outgoing>Flow_toUserTask</bpmn:outgoing>
+    </bpmn:serviceTask>
+
+    <bpmn:sequenceFlow id="Flow_toUserTask" sourceRef="Activity_1s0wvb2" targetRef="UserTask_1" />
+
+    <bpmn:userTask id="UserTask_1" name="Wait for approval">
+      <bpmn:incoming>Flow_toUserTask</bpmn:incoming>
+      <bpmn:outgoing>Flow_toEnd</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:sequenceFlow id="Flow_toEnd" sourceRef="UserTask_1" targetRef="Event_1x9rmxy" />
+
+    <bpmn:endEvent id="Event_1x9rmxy">
+      <bpmn:incoming>Flow_toEnd</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1kaebg3">
+
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_1s0wvb2_di" bpmnElement="Activity_1s0wvb2">
+        <dc:Bounds x="240" y="77" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="UserTask_1_di" bpmnElement="UserTask_1">
+        <dc:Bounds x="370" y="77" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Event_1x9rmxy_di" bpmnElement="Event_1x9rmxy">
+        <dc:Bounds x="500" y="99" width="36" height="36"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_0irmb0v_di" bpmnElement="Flow_0irmb0v">
+        <di:waypoint x="215" y="117"/>
+        <di:waypoint x="240" y="117"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_toUserTask_di" bpmnElement="Flow_toUserTask">
+        <di:waypoint x="340" y="117"/>
+        <di:waypoint x="370" y="117"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_toEnd_di" bpmnElement="Flow_toEnd">
+        <di:waypoint x="470" y="117"/>
+        <di:waypoint x="500" y="117"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

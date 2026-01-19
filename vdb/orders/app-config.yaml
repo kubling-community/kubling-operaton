@@ -1,0 +1,51 @@
+transports:
+  nativeProtocol:
+    bindAddress: "0.0.0.0"
+    portNumber: {{ NATIVE_PORT}}
+    secure: true
+  pgProtocol:
+    enable: true
+vdb:
+  descriptorBundle: {{ DESCRIPTOR_BUNDLE }}
+
+management:
+  enableRestartEndpoint: false
+
+cache:
+  enableInvalidateEndpoint: false
+
+buffer:
+  useDisk: false
+metricsCommonTags:
+  instance_name: "kubling_orders_local"
+
+kublingAgent:
+  enabled: false
+
+softTransactions:
+  enabled: true
+  flushRemovalTaskCron: "0 0/60 * * * *"
+  crashCompensationEnabled: true
+  crashCompensationMaxAgeMinutes: 20
+
+instrumentation:
+
+  openTelemetryCommonAttributes:
+    serviceName: "kubling-srv"
+    serviceNamespace: "kubling-ns"
+    serviceInstance: "kube-instance-1"
+    environment: "DEV"
+
+  logs:
+    core:
+      enabled: true
+      level: "DEBUG"
+      consoleEcho: true
+    script:
+      enabled: true
+      level: "DEBUG"
+      consoleEcho: true
+    agentic:
+      enabled: false
+      level: "DEBUG"
+      consoleEcho: true

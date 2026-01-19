@@ -1,0 +1,97 @@
+---
+name: "OperatonVDB"
+version: "1"
+
+dataSources:
+
+  - name: "operaton_meta"
+    dataSourceType: "EMBEDDED_INMEM"
+    configObject:
+      dataSourceName: "metadata"
+      databaseName: "metadata"
+      userName: "sa"
+      token: "sa"
+      maxConnectionPoolSize: 5
+      minConnectionPoolSize: 1
+      maxConnectionIdleMilliseconds: 7200000
+      maxConnectionLifeTimeMilliseconds: 14400000
+      cache:
+        enabled: false
+        ttlSeconds: 43200
+      softTransactions: 
+        enabled: true
+      contributesToHealth: false
+      allowBruteForceOperations: false
+      ddlFilePaths:
+        - "bundle:ddl/metadata-rep-kubling.sql"
+    schema:
+      type: "PHYSICAL"
+      properties:
+        importer.useCatalogName: "false"
+        importer.useFullSchemaName: "false"
+        importer.schemaName: "PUBLIC"
+      cacheDefaultStrategy: "NO_CACHE"
+
+  - name: "operaton_runtime"
+    dataSourceType: "MYSQL"
+    configObject:
+      dataSourceName: "runtime"
+      serverAddress: "mysql"
+      serverPort: 3306
+      databaseName: "operaton_tx"
+      userName: "root"
+      token: "test"
+      cache:
+        enabled: false
+        ttlSeconds: 43200
+      softTransactions: 
+        enabled: true
+      allowBruteForceOperations: false
+    schema:
+      properties:
+        importer.useCatalogName: "false"
+        importer.useFullSchemaName: "false"
+        importer.catalog: "operaton_tx"
+      cacheDefaultStrategy: "NO_CACHE"
+
+  - name: "operaton_history"
+    dataSourceType: "POSTGRESQL"
+    configObject:
+      dataSourceName: "history"
+      databaseName: "operaton_history"
+      serverAddress: "postgres"
+      serverPort: 5432
+      userName: "postgres"
+      token: "test"
+      maxConnectionPoolSize: 5
+      minConnectionPoolSize: 1
+      maxConnectionIdleMilliseconds: 7200000
+      maxConnectionLifeTimeMilliseconds: 14400000
+      cache:
+        enabled: false
+        ttlSeconds: 43200
+      softTransactions: 
+        enabled: true
+      contributesToHealth: false
+      allowBruteForceOperations: false
+    schema:
+      type: "PHYSICAL"
+      properties:
+        importer.useCatalogName: "false"
+        importer.useFullSchemaName: "false"
+        importer.schemaName: "public"
+      cacheDefaultStrategy: "NO_CACHE"
+
+  - name: "operaton"
+    dataSourceType: "COMPOSITE"
+    configObject:
+      dataSourceName: "operaton"
+      softTransactions: 
+        enabled: true
+      imports:
+        - dataSource: "operaton_runtime"
+          tableNamePattern: "(?i)^(?!replication_|pg_|mysql_).*act_ru_.+" # runtime (MySQL)
+        - dataSource: "operaton_history"
+          tableNamePattern: "(?i)^act_hi_.+"                              # history (Postgres)
+        - dataSource: "operaton_meta"
+          tableNamePattern: "(?i)^(act_re_|act_ge_|act_id_).+"            # metadata (Kubling embedded)

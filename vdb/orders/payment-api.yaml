@@ -1,0 +1,233 @@
+openapi: 3.0.3
+info:
+  title: Payment Service API
+  version: 1.1.0
+
+servers:
+  - url: http://payment-api:8080
+
+paths:
+
+  /payments:
+    get:
+      summary: List payments with optional filters
+      operationId: listPayments
+      parameters:
+        - in: query
+          name: orderId
+          schema:
+            type: integer
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [PENDING, OK, FAILED]
+        - in: query
+          name: since
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: List of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentResponse'
+
+    post:
+      summary: Create a new payment
+      operationId: createPayment
+      requestBody:
+        description: Payment to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '201':
+          description: Created payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '409':
+          description: Conflict while creating the payment
+        '422':
+          description: Invalid payment request
+        '500':
+          description: Upstream service error
+
+  /payments/{orderId}:
+    put:
+      summary: Replace an existing payment
+      operationId: updatePayment
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentUpdate'
+      responses:
+        '200':
+          description: Updated payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+        '409':
+          description: Conflict updating the payment
+        '422':
+          description: Invalid update payload
+        '500':
+          description: Upstream error
+
+    patch:
+      summary: Partially update a payment
+      operationId: partialUpdatePayment
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Updated payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+        '409':
+          description: Conflict during partial update
+        '422':
+          description: Invalid patch payload
+        '500':
+          description: Upstream service error
+
+    delete:
+      summary: Delete a payment
+      operationId: deletePayment
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Payment deleted
+        '404':
+          description: Payment not found
+        '409':
+          description: Conflict while deleting the payment
+        '500':
+          description: Upstream service error
+
+  /payments/{orderId}/status:
+    get:
+      summary: Get payment status
+      operationId: getPaymentStatus
+      parameters:
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Status response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentStatusResponse'
+        '404':
+          description: Payment not found
+
+components:
+  schemas:
+
+    PaymentRequest:
+      type: object
+      required: [orderId, amount, currency]
+      properties:
+        orderId:
+          type: integer
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          example: "EUR"
+        status:
+          type: string
+          enum: [PENDING, OK, FAILED]
+        externalTxId:
+          type: string
+          nullable: true
+
+    PaymentUpdate:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, OK, FAILED]
+        externalTxId:
+          type: string
+          nullable: true
+
+    PaymentResponse:
+      type: object
+      required: [orderId, status]
+      properties:
+        orderId:
+          type: integer
+        status:
+          type: string
+          enum: [OK, FAILED, PENDING]
+        externalTxId:
+          type: string
+          nullable: true
+        currency:
+          type: string
+        amount:
+          type: number
+        timestamp:
+          type: string
+          format: date-time
+
+    PaymentStatusResponse:
+      type: object
+      required: [orderId, status]
+      properties:
+        orderId:
+          type: integer
+        status:
+          type: string
+          enum: [PENDING, OK, FAILED]
+        externalTxId:
+          type: string
+          nullable: true

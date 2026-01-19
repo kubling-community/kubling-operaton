@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" targetNamespace="http://kubling.io/operaton/orders-sample" exporter="Camunda Modeler" exporterVersion="5.27.0">
+  <process id="order-kubling" name="order-kubling" isExecutable="true">
+    <startEvent id="start_order" name="Order Received">
+      <outgoing>flow_start_to_validate</outgoing>
+    </startEvent>
+    <serviceTask id="validateOrder" name="Validate Order" camunda:delegateExpression="${validateOrderDelegate}">
+      <incoming>flow_start_to_validate</incoming>
+      <outgoing>flow_validate_to_create</outgoing>
+    </serviceTask>
+    <serviceTask id="createOrder" name="Create Order" camunda:delegateExpression="${createOrderDelegate}">
+      <incoming>flow_validate_to_create</incoming>
+      <outgoing>flow_create_to_reserve</outgoing>
+    </serviceTask>
+    <serviceTask id="reserveInventory" name="Reserve Inventory" camunda:delegateExpression="${reserveInventoryDelegate}">
+      <incoming>flow_create_to_reserve</incoming>
+      <outgoing>flow_reserve_to_payment</outgoing>
+    </serviceTask>
+    <serviceTask id="processPayment" name="Process Payment" camunda:delegateExpression="${processPaymentDelegate}">
+      <incoming>flow_reserve_to_payment</incoming>
+      <outgoing>flow_payment_to_gateway</outgoing>
+    </serviceTask>
+    <serviceTask id="confirmOrder" name="Confirm Order" camunda:delegateExpression="${confirmOrderDelegate}">
+      <incoming>flow_payment_to_gateway</incoming>
+      <outgoing>flow_confirm_to_notify</outgoing>
+    </serviceTask>
+    <serviceTask id="notifyCustomer" name="Continue" camunda:delegateExpression="${sendContinuationMessageDelegate}">
+      <incoming>flow_confirm_to_notify</incoming>
+      <outgoing>Flow_1dobd3s</outgoing>
+    </serviceTask>
+    <endEvent id="end_success" name="Order Completed">
+      <extensionElements />
+      <incoming>Flow_1dobd3s</incoming>
+    </endEvent>
+    <sequenceFlow id="flow_start_to_validate" sourceRef="start_order" targetRef="validateOrder" />
+    <sequenceFlow id="flow_validate_to_create" sourceRef="validateOrder" targetRef="createOrder" />
+    <sequenceFlow id="flow_create_to_reserve" sourceRef="createOrder" targetRef="reserveInventory" />
+    <sequenceFlow id="flow_reserve_to_payment" sourceRef="reserveInventory" targetRef="processPayment" />
+    <sequenceFlow id="flow_payment_to_gateway" sourceRef="processPayment" targetRef="confirmOrder" />
+    <sequenceFlow id="flow_confirm_to_notify" sourceRef="confirmOrder" targetRef="notifyCustomer" />
+    <sequenceFlow id="Flow_1dobd3s" sourceRef="notifyCustomer" targetRef="end_success" />
+    <subProcess id="failureSubprocess" triggeredByEvent="true">
+      <startEvent id="failureStart" name="Failure">
+        <outgoing>Flow_1vhkoki</outgoing>
+        <errorEventDefinition id="globalErrorDef" />
+      </startEvent>
+      <serviceTask id="reportFailureTask" name="Report Failure" camunda:delegateExpression="${reportFailureDelegate}">
+        <incoming>Flow_1vhkoki</incoming>
+        <outgoing>Flow_0ci5fk4</outgoing>
+      </serviceTask>
+      <sequenceFlow id="Flow_1vhkoki" sourceRef="failureStart" targetRef="reportFailureTask" />
+      <endEvent id="failureEnd" name="Failure Logged">
+        <incoming>Flow_0ci5fk4</incoming>
+      </endEvent>
+      <sequenceFlow id="Flow_0ci5fk4" sourceRef="reportFailureTask" targetRef="failureEnd" />
+    </subProcess>
+  </process>
+  <bpmndi:BPMNDiagram id="kublingDiagram">
+    <bpmndi:BPMNPlane id="kublingPlane" bpmnElement="order-kubling">
+      <bpmndi:BPMNShape id="DI_start_order" bpmnElement="start_order">
+        <dc:Bounds x="180" y="100" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="159" y="136" width="78" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_validateOrder" bpmnElement="validateOrder">
+        <dc:Bounds x="280" y="85" width="150" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_createOrder" bpmnElement="createOrder">
+        <dc:Bounds x="280" y="225" width="150" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_reserveInventory" bpmnElement="reserveInventory">
+        <dc:Bounds x="535" y="225" width="170" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_processPayment" bpmnElement="processPayment">
+        <dc:Bounds x="535" y="83" width="170" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_confirmOrder" bpmnElement="confirmOrder">
+        <dc:Bounds x="785" y="225" width="170" height="70" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_notifyCustomer" bpmnElement="notifyCustomer">
+        <dc:Bounds x="975" y="83" width="170" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DI_end_success" bpmnElement="end_success">
+        <dc:Bounds x="1282" y="100" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1258" y="136" width="85" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1n2ijrt_di" bpmnElement="failureSubprocess" isExpanded="true">
+        <dc:Bounds x="490" y="590" width="445" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1rg2nr9_di" bpmnElement="failureStart">
+        <dc:Bounds x="522" y="682" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="523" y="725" width="34" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1eni8th_di" bpmnElement="reportFailureTask">
+        <dc:Bounds x="640" y="660" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1heaeby_di" bpmnElement="failureEnd">
+        <dc:Bounds x="822" y="682" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="803" y="725" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1vhkoki_di" bpmnElement="Flow_1vhkoki">
+        <di:waypoint x="558" y="700" />
+        <di:waypoint x="640" y="700" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ci5fk4_di" bpmnElement="Flow_0ci5fk4">
+        <di:waypoint x="740" y="700" />
+        <di:waypoint x="822" y="700" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_flow_1" bpmnElement="flow_start_to_validate">
+        <di:waypoint x="216" y="118" />
+        <di:waypoint x="280" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_flow_2" bpmnElement="flow_validate_to_create">
+        <di:waypoint x="355" y="155" />
+        <di:waypoint x="355" y="225" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_flow_3" bpmnElement="flow_create_to_reserve">
+        <di:waypoint x="430" y="258" />
+        <di:waypoint x="535" y="258" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_flow_4" bpmnElement="flow_reserve_to_payment">
+        <di:waypoint x="620" y="225" />
+        <di:waypoint x="620" y="153" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_flow_5" bpmnElement="flow_payment_to_gateway">
+        <di:waypoint x="705" y="118" />
+        <di:waypoint x="745" y="118" />
+        <di:waypoint x="745" y="260" />
+        <di:waypoint x="785" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DI_flow_7" bpmnElement="flow_confirm_to_notify">
+        <di:waypoint x="955" y="260" />
+        <di:waypoint x="1060" y="260" />
+        <di:waypoint x="1060" y="153" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1dobd3s_di" bpmnElement="Flow_1dobd3s">
+        <di:waypoint x="1145" y="118" />
+        <di:waypoint x="1282" y="118" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

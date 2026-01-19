@@ -1,0 +1,15 @@
+name: payments
+version: 1.0
+innerDDLFilePath: "payments.sql"
+handlersAutoDiscoveryPath: "handler"
+innerTranslatorConfigFilePath: "bundle:/translation-config-overrides.yaml"
+
+contextVariables:
+  - name: "PAYMENTS_URL"
+    sensitive: false
+    failIfMissing: true
+
+contextVariables:
+  - name: "ORDER_ISSUES_URL"
+    sensitive: false
+    failIfMissing: true

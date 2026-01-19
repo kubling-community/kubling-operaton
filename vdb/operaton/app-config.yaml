@@ -1,0 +1,26 @@
+transports:
+  nativeProtocol:
+    bindAddress: "0.0.0.0"
+    portNumber: 35482
+    secure: false
+  pgProtocol:
+    enable: false
+vdb:
+  descriptorBundle: {{ DESCRIPTOR_BUNDLE }}
+
+management:
+  enableRestartEndpoint: false
+
+cache:
+  enableInvalidateEndpoint: false
+
+buffer:
+  useDisk: false
+metricsCommonTags:
+  instance_name: "kubling_operaton_local"
+
+kublingAgent:
+  enabled: false
+
+softTransactions:
+  enabled: true
