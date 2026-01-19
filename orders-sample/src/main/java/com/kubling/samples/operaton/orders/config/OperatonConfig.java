@@ -1,6 +1,5 @@
 package com.kubling.samples.operaton.orders.config;
 
-import com.kubling.samples.operaton.orders.tx.KublingTransactionManager;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.util.IsolationLevel;
@@ -22,7 +21,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.DefaultTransactionStatus;
 
 import javax.sql.DataSource;
-import java.util.Optional;
 import java.util.UUID;
 
 @Configuration
@@ -113,9 +111,9 @@ public class OperatonConfig {
         return new DefaultDatasourceConfiguration(
                 props,
                 tm,
-                Optional.of(operatonTransactionManager),
+                operatonTransactionManager,
                 ds,
-                Optional.of(operatonDataSource)
+                operatonDataSource
         );
     }
 
