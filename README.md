@@ -42,7 +42,7 @@ Kubling can also be used as a **single logical database** that represents multip
 - External APIs
 - Legacy systems
 
-When modeled through Kubling, all these sources appear as **tables in one schema** and can participate in a **soft transaction**.
+When modeled through Kubling, all these sources appear as tables VDBs/Schemas and can participate in a soft transaction.
 
 From the process perspective:
 - All operations happen against **one database**
@@ -64,9 +64,7 @@ kubling-operaton
 
 ### `test-helpers`
 
-Common utilities and helpers used to bootstrap **Testcontainers-based environments**, shared across the examples.
-
----
+Common utilities and helpers used to bootstrap Testcontainers-based environments, shared across the examples.
 
 ### `operaton-dataplane`
 
@@ -83,8 +81,6 @@ In this module:
 
 The goal is to demonstrate how Operaton can remain unchanged while its data plane is fully virtualized.
 
----
-
 ### `orders-sample`
 
 A simple but realistic transactional process example.
@@ -96,11 +92,10 @@ This module demonstrates:
 - No compensating processes
 - No orchestration glue code
 
-All involved systems (orders, inventory, payments, etc.) are modeled in Kubling, so from the process point of view everything happens against **a single database**.
+All involved systems (orders, inventory, payments, etc.) are modeled in Kubling, so from the process point of 
+view everything happens against **a single database**.
 
-The Operaton instance used in this module **also runs on top of Kubling for its internal data plane**, making this a full end-to-end example.
-
----
+The Operaton instance used in this module also runs on top of Kubling for its internal data plane, making this a full end-to-end example.
 
 ### `vdb`
 
@@ -115,7 +110,7 @@ They are kept in a separate directory to make:
 
 ## Running the Examples
 
-Both `operaton-dataplane` and `orders-sample` include **simple integration tests** that can be executed directly.
+Both `operaton-dataplane` and `orders-sample` include simple integration tests that can be executed directly.
 
 ### Important notes
 
@@ -147,3 +142,8 @@ The hypothesis is that, by pushing these concerns into the data plane, it may be
 retain embedded execution and ephemeral instances without sacrificing scalability.
 
 That said, contributions and discussions are always welcome.
+
+---
+
+- Kubling Documentation: https://docs.kubling.com
+- Blog: https://blog.kubling.com
