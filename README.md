@@ -1,5 +1,18 @@
 # kubling-operaton
 
+> [!IMPORTANT]
+> **This repository is archived and no longer maintained.**
+>
+> This project was created to demonstrate Kubling's integration capabilities.
+> Keeping it aligned with Kubling's frequent release cadence requires more
+> maintenance than current user interest justifies.
+>
+> It remains available as a legacy example, but it will not receive updates or
+> migrations to newer Kubling versions. Its code and configuration may depend
+> on an older, unsupported Kubling release.
+
+## Historical project
+
 The focus of this repository is to explore and document architectural patterns that emerge
 when Kubling is used as the primary data source for an Operaton engine.
 
@@ -125,7 +138,7 @@ Make sure your environment has sufficient CPU and memory resources before runnin
 
 ---
 
-### Future work
+### Historical exploration notes
 
 From Camunda 8 onwards, the engine architecture moved decisively toward an event-based model,
 primarily to address scalability concerns.
@@ -134,14 +147,14 @@ While event-driven architectures are a proven approach, many of the challenges t
 are rooted not only in execution semantics, but also in the structure and scalability of the
 data plane itself.
 
-A natural next step for this project is to explore whether similar scalability characteristics
-can be achieved with embedded engines by rethinking the data plane: separating
+One direction considered for this project was whether similar scalability characteristics
+could be achieved with embedded engines by rethinking the data plane: separating
 straight-through processing, wait states, and historical data at the storage level.
 
 The hypothesis is that, by pushing these concerns into the data plane, it may be possible to
 retain embedded execution and ephemeral instances without sacrificing scalability.
 
-That said, contributions and discussions are always welcome.
+These ideas are retained for historical context; no further work or version migrations are planned.
 
 ---
 
